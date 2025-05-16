@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" class="h-100"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RunCue LIVE</title>
+    <link rel="icon" href="/uibuilder/common/images/CARROW.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head><body class="h-100">
+    <div id="app" v-cloak class="h-100 font-weight-bold">
+        <b-container fluid class="h-100">
+            <b-row class="text-center h-10 mt-2" v-if="showMessageBox">
+                <b-col class="border border-white m-2 text-center d-table message-box">
+                	{{currentMessage}}
+                </b-col>
+            </b-row>
+        		<b-row class="h-45" v-if="countdownTimer.showCountdown">
+                	<b-col class="border border-white m-2 text-center d-table">
+                    	<span class="d-table-cell align-middle countdown" v-bind:class="{ red: countdownTimer.red }">{{countdownTimer.rendered}}</span>
+                	</b-col>
+            		</b-row>
+            <b-row class="h-45">
+                <b-col class="w-50 border border-white m-2 text-center d-table" v-if="countdownTimer.showMessage">
+                    <span class="d-table-cell align-middle text-uppercase countdownmessage">{{countdownTimer.message}}</span>
+                </b-col>
+                <b-col class="w-50 border border-white m-2" v-if="rtc.isVisible">
+                    <b-row class="text-center h-60 mt-2">
+                        <b-col class="align-middle clocktext">
+                            {{rtc.rendered}}
+                        </b-col>
+                    </b-row>
+                    <b-row class="text-center h-30">
+                        <b-col class="align-middle clockdesc">
+                            LOCAL TIME
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </b-container>
+    </div>
+    
+   
+    <!-- Prod version -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>
+    <script defer src="../uibuilder/uibuilder.iife.min.js"></script>
+
+    <script defer src="./AnimationController.js"></script>
+    <script defer src="./RTC.js"></script>
+    <script defer src="./RundownController.js"></script>
+    <script defer src="./index.js"></script>
+</body></html>
