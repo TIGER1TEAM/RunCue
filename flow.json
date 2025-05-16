@@ -1,0 +1,1495 @@
+[
+    {
+        "id": "2b23412e6262190e",
+        "type": "tab",
+        "label": "Settings/Rundown API",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a5f8146f7a8a3d9e",
+        "type": "tab",
+        "label": "Clock UI",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "6e2cdf07498fa057",
+        "type": "tab",
+        "label": "Logic",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1d8ad163.b81b1f",
+        "type": "subflow",
+        "name": "Clean MSG",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5a87d3d1.2cce2c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 300,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "5a87d3d1.2cce2c",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-arrow-right"
+    },
+    {
+        "id": "ca535f89.f2c79",
+        "type": "subflow",
+        "name": "Object.fromEntries",
+        "info": "",
+        "category": "parser",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b7714d53.9d6c2"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 300,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b7714d53.9d6c2",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "msg.topic",
+                "type": "str",
+                "value": ""
+            }
+        ],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-columns"
+    },
+    {
+        "id": "89acf5a3.56af08",
+        "type": "subflow",
+        "name": "Filter Rundown",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "53974af0.6342c4"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 280,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "53974af0.6342c4",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C7E9C0",
+        "icon": "font-awesome/fa-filter"
+    },
+    {
+        "id": "fc1fe445e5c52478",
+        "type": "gauth",
+        "name": "rpi-clock2@rpi-clock-453018.iam.gserviceaccount.com"
+    },
+    {
+        "id": "5b44865f.2ff418",
+        "type": "gauth",
+        "name": "rpi-clock2@rpi-clock-453018.iam.gserviceaccount.com"
+    },
+    {
+        "id": "5a87d3d1.2cce2c",
+        "type": "function",
+        "z": "1d8ad163.b81b1f",
+        "name": "Clean Message",
+        "func": "return {payload: null};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b7714d53.9d6c2",
+        "type": "function",
+        "z": "ca535f89.f2c79",
+        "name": "array to obj",
+        "func": "try {\n    msg.payload = Object.fromEntries(msg.payload);\n    if (env.get(\"msg.topic\")) { msg.topic = env.get(\"msg.topic\"); }\n} catch (e) {\n    node.error(e);\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "53974af0.6342c4",
+        "type": "function",
+        "z": "89acf5a3.56af08",
+        "name": "filter",
+        "func": "msg.payload = msg.payload.filter(obj => obj[\"Clock-ID\"].includes(msg.clockID));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0644f20210259480",
+        "type": "GSheet",
+        "z": "2b23412e6262190e",
+        "creds": "fc1fe445e5c52478",
+        "method": "get",
+        "action": "",
+        "sheet": "1p_Aap9r-zoNHlTZ9uAa1S-NB6a46v8czsm_YkfwEpoA",
+        "cells": "Rundown",
+        "flatten": false,
+        "name": "Get Gsheet Rundown Data",
+        "x": 520,
+        "y": 200,
+        "wires": [
+            [
+                "08d459bd9843df78"
+            ]
+        ]
+    },
+    {
+        "id": "991591a0c755aaae",
+        "type": "inject",
+        "z": "2b23412e6262190e",
+        "name": "Trigger Rundown Sheet Update",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "10",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 200,
+        "wires": [
+            [
+                "0644f20210259480"
+            ]
+        ]
+    },
+    {
+        "id": "8067d433d30caef1",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Google Sheets API",
+        "info": "",
+        "x": 150,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "2a56cbce7ff0e328",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Rundown",
+        "info": "",
+        "x": 120,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "532124fc69f431a5",
+        "type": "GSheet",
+        "z": "2b23412e6262190e",
+        "creds": "5b44865f.2ff418",
+        "method": "get",
+        "action": "",
+        "sheet": "1p_Aap9r-zoNHlTZ9uAa1S-NB6a46v8czsm_YkfwEpoA",
+        "cells": "Settings",
+        "flatten": false,
+        "name": "Get Gsheet Settings Data",
+        "x": 510,
+        "y": 640,
+        "wires": [
+            [
+                "792b3da7a2e956f5"
+            ]
+        ]
+    },
+    {
+        "id": "cd1f834a8cc35d83",
+        "type": "inject",
+        "z": "2b23412e6262190e",
+        "name": "Trigger Settings Sheet Update",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 640,
+        "wires": [
+            [
+                "532124fc69f431a5"
+            ]
+        ]
+    },
+    {
+        "id": "b252c9df0610ec84",
+        "type": "debug",
+        "z": "2b23412e6262190e",
+        "name": "GSheets Settings",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "05f8a7e56f4286f6",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Settings",
+        "info": "",
+        "x": 120,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "d52833eb398991b6",
+        "type": "link in",
+        "z": "2b23412e6262190e",
+        "name": "Trigger Setttings Update",
+        "links": [],
+        "x": 95,
+        "y": 700,
+        "wires": [
+            [
+                "a47bbfb9635ec132"
+            ]
+        ]
+    },
+    {
+        "id": "a47bbfb9635ec132",
+        "type": "subflow:1d8ad163.b81b1f",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "env": [],
+        "x": 270,
+        "y": 700,
+        "wires": [
+            [
+                "532124fc69f431a5"
+            ]
+        ]
+    },
+    {
+        "id": "94546f632c61e814",
+        "type": "link in",
+        "z": "2b23412e6262190e",
+        "name": "Trigger Rundown Update",
+        "links": [],
+        "x": 95,
+        "y": 260,
+        "wires": [
+            [
+                "f1c48a928fd98621"
+            ]
+        ]
+    },
+    {
+        "id": "f1c48a928fd98621",
+        "type": "subflow:1d8ad163.b81b1f",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "env": [],
+        "x": 270,
+        "y": 260,
+        "wires": [
+            [
+                "0644f20210259480"
+            ]
+        ]
+    },
+    {
+        "id": "792b3da7a2e956f5",
+        "type": "subflow:ca535f89.f2c79",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "env": [
+            {
+                "name": "msg.topic",
+                "value": "settings/settings",
+                "type": "str"
+            }
+        ],
+        "x": 770,
+        "y": 640,
+        "wires": [
+            [
+                "b252c9df0610ec84",
+                "b96b211255b6fcd0",
+                "95a26b67c530c733"
+            ]
+        ]
+    },
+    {
+        "id": "08d459bd9843df78",
+        "type": "function",
+        "z": "2b23412e6262190e",
+        "name": "to settings object",
+        "func": "msg.topic = \"settings/rundown\";\nmsg.payload = convertToSettingsObject(removeEmptyRows(msg.payload))||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction convertToSettingsObject([key, ...val]) {\n   return val.map(row => Object.fromEntries(row.map((value, index) => [key[index], value])));\n}\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 8);\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 200,
+        "wires": [
+            [
+                "f3c125cafc43e1ea"
+            ]
+        ],
+        "icon": "font-awesome/fa-arrows-h"
+    },
+    {
+        "id": "f3c125cafc43e1ea",
+        "type": "function",
+        "z": "2b23412e6262190e",
+        "name": "Convert+Check Data",
+        "func": "try {\n    //Parse Data\n    msg.payload = msg.payload.map((event, index) => {\n        event[\"Timer-End-Time\"] = parseTimeString(event[\"Timer-End-Time\"], index+2);\n        event[\"Negative-Overrun\"] = Math.abs(parseInt(event[\"Negative-Overrun\"])*1000) || 0;\n        event[\"Show-Current-Time\"] = event[\"Show-Current-Time\"] == \"Yes\" ? true : false;\n        event[\"Clock-ID\"] = getClockIds(event[\"Clock-ID\"]||\"1\");\n        event[\"Timer-Text\"] = event[\"Timer-Text\"].length > 50 ? event[\"Timer-Text\"].substring(0, 50) : event[\"Timer-Text\"];\n        event[\"Clock-Name\"] = event[\"Clock-Name\"].length > 50 ? event[\"Clock-Name\"].substring(0, 50) : event[\"Clock-Name\"];\n        return event;\n    });\n    // Sort array by calculated timestamps\n    msg.payload.sort(compareDates);\n    \n    if (overrunMakesNoSense(msg.payload)) throw new RangeError(\"InvalidOverrunLength\");\n} catch(e) {\n    node.error(e);      // For the debug panel\n    node.error(e, msg); // For the catch node\n    return null;\n}\n\nif (hasChanged(msg.payload)) {\n    //node.warn(\"rundown has changed\");\n    return [msg, msg];\n}\n\nreturn [null, msg];\n\n// Parse the comma seperated clock ID data into an array\nfunction getClockIds(gsd) {\n    return gsd.split(\",\").map(id => {\n        return Math.abs(parseInt(id)) || 0;\n    });\n}\n\n// Compare function to sort by actual timer end time\nfunction compareDates(a, b) {\n    if (a[\"Timer-End-Time\"] < b[\"Timer-End-Time\"]) {\n        return -1;\n    } else if (a[\"Timer-End-Time\"] > b[\"Timer-End-Time\"]) {\n        return 1;\n    }\n    return 0;\n}\n\n// Check if the overrun value colides with the next timer\nfunction overrunMakesNoSense(rd) {\n    let result = rd.some((row, i, arr) => {\n        if (i < arr.length-2) {\n            if (row[\"Timer-End-Time\"] + row[\"Negative-Overrun\"] >= arr[i+1][\"Timer-End-Time\"]) {\n                node.error(`Invalid overrun in sheet line ${i+2}`);\n                return true;\n            }\n        }\n        return false;\n    });\n    return result;\n}\n\n// Parse the sheet date string into a timestamp\nfunction parseTimeString(dts, line) {\n    try {\n        let p1 = dts.split(\".\", 4);\n        let p2 = p1[2].split(\" \", 2);\n        let p3 = p2[1].split(\":\", 4).map(val => parseInt(val) || 0);\n        let d = new Date();\n        d.setUTCFullYear(parseInt(p2), parseInt(p1[1])-1, parseInt(p1[0]));\n        d.setUTCHours(p3[0], p3[1], p3[2], parseInt(p1[3]));\n        let ts = d.getTime();\n        if (ts <= 0) { throw new RangeError(); } // Negative time is not allowed, it's not the 1900's anymore\n        return ts;\n    } catch(e) {\n        node.error(`Invalid date string in sheet for value \"${dts}\" line ${line}`);\n        throw new RangeError(\"InvalidSpreadSheetDate\");\n    }\n}\n\n// Check if settings have changed\nfunction hasChanged(newRundown) {\n    let glrd = global.get(\"fullRundown\")||[];\n    if (glrd.length !== newRundown.length) return true; // Check for equal length first because that's an obvious sign that it changed\n\n    for (const [index, elem] of newRundown.entries()) {\n        for (var e in elem) {\n            if (typeof glrd[index][e] === \"object\") {\n                if (JSON.stringify(glrd[index][e]) !== JSON.stringify(elem[e])) return true; // only an array should ever show up here\n            } else {\n                if (glrd[index][e] != elem[e]) return true;\n            }\n        }\n    }\n    return false;\n}",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 200,
+        "wires": [
+            [
+                "63e56248b52150e6",
+                "bce4eeabc6d3ec36"
+            ],
+            [
+                "c4c0cee880967156"
+            ]
+        ],
+        "icon": "node-red/swap.svg"
+    },
+    {
+        "id": "3ca75d29a8cbe5cf",
+        "type": "catch",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 120,
+        "y": 1040,
+        "wires": [
+            [
+                "4e91fcf722af57bd"
+            ]
+        ]
+    },
+    {
+        "id": "4e91fcf722af57bd",
+        "type": "debug",
+        "z": "2b23412e6262190e",
+        "name": "Sheets API Catch",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 1040,
+        "wires": [],
+        "icon": "node-red/alert.svg"
+    },
+    {
+        "id": "63e56248b52150e6",
+        "type": "link out",
+        "z": "2b23412e6262190e",
+        "name": "rundown settings update event data changed",
+        "mode": "link",
+        "links": [
+            "0a7f75ad4e81977b"
+        ],
+        "x": 1175,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b96b211255b6fcd0",
+        "type": "link out",
+        "z": "2b23412e6262190e",
+        "name": "general settings update event data",
+        "mode": "link",
+        "links": [
+            "419166336fb6aafa"
+        ],
+        "x": 915,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "96746e18f86fb195",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Error Reporting",
+        "info": "",
+        "x": 140,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "c4c0cee880967156",
+        "type": "change",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "fullRundown",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1260,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "95a26b67c530c733",
+        "type": "change",
+        "z": "2b23412e6262190e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "globalSettings",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1010,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bce4eeabc6d3ec36",
+        "type": "debug",
+        "z": "2b23412e6262190e",
+        "name": "GSheets Rundown Changed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "6f537b03a4fc842f",
+        "type": "inject",
+        "z": "2b23412e6262190e",
+        "name": "Trigger local file update",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 400,
+        "wires": [
+            [
+                "6b242979b3cce6e5"
+            ]
+        ]
+    },
+    {
+        "id": "6b242979b3cce6e5",
+        "type": "file in",
+        "z": "2b23412e6262190e",
+        "name": "read file",
+        "filename": "/data/rundown.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 460,
+        "y": 400,
+        "wires": [
+            [
+                "276258b94e7bf38c"
+            ]
+        ]
+    },
+    {
+        "id": "086117aef34e9138",
+        "type": "watch",
+        "z": "2b23412e6262190e",
+        "name": "watch local file changes",
+        "files": "/data/rundown.csv",
+        "recursive": "",
+        "x": 180,
+        "y": 440,
+        "wires": [
+            [
+                "6b242979b3cce6e5"
+            ]
+        ]
+    },
+    {
+        "id": "276258b94e7bf38c",
+        "type": "csv",
+        "z": "2b23412e6262190e",
+        "name": "parse csv",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": "",
+        "x": 600,
+        "y": 400,
+        "wires": [
+            [
+                "50524efe5b5b8524"
+            ]
+        ]
+    },
+    {
+        "id": "b9a0cba9754e309f",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Google Sheets API",
+        "info": "",
+        "x": 150,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "9416ef3a1828ee72",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Local file API",
+        "info": "",
+        "x": 130,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "50524efe5b5b8524",
+        "type": "function",
+        "z": "2b23412e6262190e",
+        "name": "check local data",
+        "func": "msg.topic = \"settings/rundown\";\nmsg.payload = msg.payload||[];\n\nif (msg.payload.length === 0) {\n    node.error(`Your config file is empty, not going to do anything`);\n    return null;\n}\n\nreturn msg;\n\nfunction removeEmptyRows(array) {\n    return array.filter(x => x.length === 6);\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 400,
+        "wires": [
+            [
+                "f3c125cafc43e1ea"
+            ]
+        ],
+        "icon": "font-awesome/fa-search"
+    },
+    {
+        "id": "92bea2a28e877213",
+        "type": "inject",
+        "z": "2b23412e6262190e",
+        "name": "Trigger local file update",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 840,
+        "wires": [
+            [
+                "8ecd3540dde97266"
+            ]
+        ]
+    },
+    {
+        "id": "8ecd3540dde97266",
+        "type": "file in",
+        "z": "2b23412e6262190e",
+        "name": "read file",
+        "filename": "/data/settings.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 460,
+        "y": 840,
+        "wires": [
+            [
+                "046b5c584cbd9051"
+            ]
+        ]
+    },
+    {
+        "id": "b4df4fee37b076f4",
+        "type": "watch",
+        "z": "2b23412e6262190e",
+        "name": "watch local file changes",
+        "files": "/data/settings.csv",
+        "recursive": "",
+        "x": 180,
+        "y": 880,
+        "wires": [
+            [
+                "8ecd3540dde97266"
+            ]
+        ]
+    },
+    {
+        "id": "046b5c584cbd9051",
+        "type": "csv",
+        "z": "2b23412e6262190e",
+        "name": "parse csv",
+        "sep": ",",
+        "hdrin": false,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\r\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": false,
+        "include_null_values": "",
+        "x": 600,
+        "y": 840,
+        "wires": [
+            [
+                "d05970bededac430"
+            ]
+        ]
+    },
+    {
+        "id": "c828d7b12117b173",
+        "type": "comment",
+        "z": "2b23412e6262190e",
+        "name": "Local file API",
+        "info": "",
+        "x": 130,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "d05970bededac430",
+        "type": "function",
+        "z": "2b23412e6262190e",
+        "name": "prep array",
+        "func": "msg.payload = msg.payload.map(l => [l[\"col1\"], l[\"col2\"]]);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 840,
+        "wires": [
+            [
+                "792b3da7a2e956f5"
+            ]
+        ]
+    },
+    {
+        "id": "a23cee071a4ca8f7",
+        "type": "debug",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "FE Data",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "2932ed819795b1ba",
+        "type": "debug",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "FE Control",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ea9aab49de8e9e6c",
+        "type": "inject",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "Sync Timestamp",
+        "props": [
+            {
+                "p": "payload.ts",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "settings/rtcRefTs",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "2e407337ca5f1070"
+            ]
+        ]
+    },
+    {
+        "id": "c1d0826f3f8e2191",
+        "type": "comment",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "server sync timestamp",
+        "info": "",
+        "x": 160,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "427676caa0bcb32b",
+        "type": "link out",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "fe event",
+        "mode": "link",
+        "links": [
+            "ed4d022255883a01",
+            "5a39cee04d130477"
+        ],
+        "x": 515,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "5a39cee04d130477",
+        "type": "link in",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "from fe event",
+        "links": [
+            "427676caa0bcb32b"
+        ],
+        "x": 695,
+        "y": 160,
+        "wires": [
+            [
+                "a23cee071a4ca8f7"
+            ]
+        ]
+    },
+    {
+        "id": "da46a0387eeab3e3",
+        "type": "link out",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "fe control event",
+        "mode": "link",
+        "links": [
+            "3b5377cf233e6bf6",
+            "f98b0182b03c713d"
+        ],
+        "x": 515,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "3b5377cf233e6bf6",
+        "type": "link in",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "from fe control event",
+        "links": [
+            "da46a0387eeab3e3"
+        ],
+        "x": 695,
+        "y": 200,
+        "wires": [
+            [
+                "2932ed819795b1ba"
+            ]
+        ]
+    },
+    {
+        "id": "a36547ab5a2942e6",
+        "type": "link in",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "to frontend unfiltered",
+        "links": [
+            "8c75e857162c658e",
+            "b7ced392e67b96a6",
+            "f325842dcb76a31b"
+        ],
+        "x": 235,
+        "y": 200,
+        "wires": [
+            [
+                "2e407337ca5f1070"
+            ]
+        ]
+    },
+    {
+        "id": "694254bbdd2a8f7b",
+        "type": "inject",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "Reload all client pages",
+        "props": [
+            {
+                "p": "_uib.reload",
+                "v": "true",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 240,
+        "wires": [
+            [
+                "2e407337ca5f1070"
+            ]
+        ]
+    },
+    {
+        "id": "62f0301537c1841e",
+        "type": "comment",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "\"The page\"",
+        "info": "",
+        "x": 400,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2e407337ca5f1070",
+        "type": "uibuilder",
+        "z": "a5f8146f7a8a3d9e",
+        "name": "",
+        "topic": "",
+        "url": "clock",
+        "okToGo": true,
+        "fwdInMessages": false,
+        "allowScripts": false,
+        "allowStyles": false,
+        "copyIndex": true,
+        "templateFolder": "blank",
+        "extTemplate": "",
+        "showfolder": false,
+        "reload": true,
+        "sourceFolder": "src",
+        "deployedVersion": "7.2.0",
+        "showMsgUib": false,
+        "title": "",
+        "descr": "",
+        "editurl": "vscode://vscode-remote/ssh-remote+192.168.7.46/home/pi/.node-red/uibuilder/clock/?windowId=_blank",
+        "x": 400,
+        "y": 180,
+        "wires": [
+            [
+                "427676caa0bcb32b"
+            ],
+            [
+                "da46a0387eeab3e3"
+            ]
+        ],
+        "icon": "font-awesome/fa-clock-o"
+    },
+    {
+        "id": "ed4d022255883a01",
+        "type": "link in",
+        "z": "6e2cdf07498fa057",
+        "name": "from fe event",
+        "links": [
+            "427676caa0bcb32b"
+        ],
+        "x": 155,
+        "y": 180,
+        "wires": [
+            [
+                "087b612784636464"
+            ]
+        ]
+    },
+    {
+        "id": "087b612784636464",
+        "type": "switch",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "initialContact",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "c0aac435b016a670"
+            ],
+            [
+                "6d734edd3d07d4e7"
+            ]
+        ]
+    },
+    {
+        "id": "3adb1b7812fa0cbd",
+        "type": "comment",
+        "z": "6e2cdf07498fa057",
+        "name": "handle frontend requests",
+        "info": "",
+        "x": 250,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "231fcde5db476665",
+        "type": "comment",
+        "z": "6e2cdf07498fa057",
+        "name": "manage connected client sessions",
+        "info": "",
+        "x": 280,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "f98b0182b03c713d",
+        "type": "link in",
+        "z": "6e2cdf07498fa057",
+        "name": "from fe control event",
+        "links": [
+            "da46a0387eeab3e3"
+        ],
+        "x": 155,
+        "y": 340,
+        "wires": [
+            [
+                "490e5ab853f9bd7c"
+            ]
+        ]
+    },
+    {
+        "id": "490e5ab853f9bd7c",
+        "type": "function",
+        "z": "6e2cdf07498fa057",
+        "name": "manage session",
+        "func": "var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\nif (msg.uibuilderCtrl == \"client connect\") {\n    //ignore for now\n} else if (msg.uibuilderCtrl == \"ready for content\") {\n    // ignore for now\n} else if (msg.uibuilderCtrl == \"client disconnect\") {\n    try {\n        delete clientList[socketId];\n    } catch(e) {\n        node.warn(\"client not in list\");\n    }\n}\n\nglobal.set(\"clients\", clientList);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 340,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-align-left"
+    },
+    {
+        "id": "699184bfef02d68e",
+        "type": "inject",
+        "z": "6e2cdf07498fa057",
+        "name": "trigger clear",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 210,
+        "y": 400,
+        "wires": [
+            [
+                "918224ee6327914a"
+            ]
+        ]
+    },
+    {
+        "id": "918224ee6327914a",
+        "type": "change",
+        "z": "6e2cdf07498fa057",
+        "name": "clear global.clients",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clients",
+                "pt": "global",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c0aac435b016a670",
+        "type": "function",
+        "z": "6e2cdf07498fa057",
+        "name": "parse clockID",
+        "func": "var clientList = global.get(\"clients\")||{};\n\nvar socketId = msg._socketId;\n\ntry {\n    clientList[msg._socketId][\"clockID\"] = parseInt(msg.payload.clockID);\n} catch(e) {\n    // Because i can't find a fitting uibuilder event for the right timing the initialContact message will come in before the ready for content event most of the time\n    clientList[socketId] = { sid: socketId, clockID: parseInt(msg.payload.clockID) };\n}\n\nglobal.set(\"clients\", clientList);\n\nmsg.clockID = clientList[msg._socketId][\"clockID\"];\nmsg.payload = global.get(\"fullRundown\")||[];\nmsg.topic = \"settings/rundown\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "0d7230c834565326",
+                "43ccafe1ce2ffc6e"
+            ]
+        ],
+        "icon": "font-awesome/fa-search"
+    },
+    {
+        "id": "0a7f75ad4e81977b",
+        "type": "link in",
+        "z": "6e2cdf07498fa057",
+        "name": "rundown settings event",
+        "links": [
+            "63e56248b52150e6"
+        ],
+        "x": 155,
+        "y": 560,
+        "wires": [
+            [
+                "c233ac4c4e073457"
+            ]
+        ]
+    },
+    {
+        "id": "91db792bdf797bc0",
+        "type": "subflow:89acf5a3.56af08",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "env": [],
+        "x": 760,
+        "y": 560,
+        "wires": [
+            [
+                "f325842dcb76a31b"
+            ]
+        ]
+    },
+    {
+        "id": "09b6764dff68a46b",
+        "type": "split",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 430,
+        "y": 560,
+        "wires": [
+            [
+                "0efe4678c9e136f5"
+            ]
+        ]
+    },
+    {
+        "id": "2ec2f30e31cd6226",
+        "type": "comment",
+        "z": "6e2cdf07498fa057",
+        "name": "push rundown updates to ui",
+        "info": "",
+        "x": 260,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "c233ac4c4e073457",
+        "type": "change",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "rundown",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "clients",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "_socketId",
+                "pt": "msg",
+                "to": "null",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 560,
+        "wires": [
+            [
+                "09b6764dff68a46b"
+            ]
+        ]
+    },
+    {
+        "id": "0efe4678c9e136f5",
+        "type": "change",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clockID",
+                "pt": "msg",
+                "to": "payload.clockID",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "_socketId",
+                "pt": "msg",
+                "to": "payload.sid",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "rundown",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "rundown",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "parts",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 580,
+        "y": 560,
+        "wires": [
+            [
+                "91db792bdf797bc0"
+            ]
+        ]
+    },
+    {
+        "id": "f325842dcb76a31b",
+        "type": "link out",
+        "z": "6e2cdf07498fa057",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "a36547ab5a2942e6"
+        ],
+        "x": 875,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "6d734edd3d07d4e7",
+        "type": "debug",
+        "z": "6e2cdf07498fa057",
+        "name": "unhandled fe msg",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "0d7230c834565326",
+        "type": "subflow:89acf5a3.56af08",
+        "z": "6e2cdf07498fa057",
+        "name": "",
+        "env": [],
+        "x": 740,
+        "y": 160,
+        "wires": [
+            [
+                "8c75e857162c658e",
+                "5f08f2702be02095"
+            ]
+        ]
+    },
+    {
+        "id": "8c75e857162c658e",
+        "type": "link out",
+        "z": "6e2cdf07498fa057",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "a36547ab5a2942e6"
+        ],
+        "x": 875,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "5f08f2702be02095",
+        "type": "debug",
+        "z": "6e2cdf07498fa057",
+        "name": "Rundown request",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "fe0bcebe288c7b7c",
+        "type": "comment",
+        "z": "6e2cdf07498fa057",
+        "name": "push settings update to ui",
+        "info": "",
+        "x": 250,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "419166336fb6aafa",
+        "type": "link in",
+        "z": "6e2cdf07498fa057",
+        "name": "from settings update event",
+        "links": [
+            "b96b211255b6fcd0"
+        ],
+        "x": 155,
+        "y": 720,
+        "wires": [
+            [
+                "b7ced392e67b96a6"
+            ]
+        ]
+    },
+    {
+        "id": "b7ced392e67b96a6",
+        "type": "link out",
+        "z": "6e2cdf07498fa057",
+        "name": "from fe filtered rundown",
+        "mode": "link",
+        "links": [
+            "a36547ab5a2942e6"
+        ],
+        "x": 255,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "43ccafe1ce2ffc6e",
+        "type": "change",
+        "z": "6e2cdf07498fa057",
+        "name": "send Settings",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "globalSettings",
+                "tot": "global"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "settings/settings",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 740,
+        "y": 120,
+        "wires": [
+            [
+                "8c75e857162c658e"
+            ]
+        ]
+    }
+]
